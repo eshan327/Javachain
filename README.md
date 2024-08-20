@@ -1,7 +1,3 @@
-# Description
- 
-An experimental, fully-functioning blockchain developed in Java.
-
 # Key Features
 - Data storage in blocks
 - Digital signatures
