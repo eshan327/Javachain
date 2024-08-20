@@ -1,4 +1,4 @@
-package noobchain;
+package Blockchain;
 import java.security.*;
 import java.util.ArrayList;
 
@@ -32,13 +32,13 @@ public class Transaction {
 				
 		//Gathers transaction inputs (Making sure they are unspent):
 		for(TransactionInput i : inputs) {
-			i.UTXO = NoobChain.UTXOs.get(i.transactionOutputId);
+			i.UTXO = Blockchain.UTXOs.get(i.transactionOutputId);
 		}
 
 		//Checks if transaction is valid:
-		if(getInputsValue() < NoobChain.minimumTransaction) {
+		if(getInputsValue() < Blockchain.minimumTransaction) {
 			System.out.println("Transaction Inputs too small: " + getInputsValue());
-			System.out.println("Please enter the amount greater than " + NoobChain.minimumTransaction);
+			System.out.println("Please enter the amount greater than " + Blockchain.minimumTransaction);
 			return false;
 		}
 		
@@ -50,13 +50,13 @@ public class Transaction {
 				
 		//Add outputs to Unspent list
 		for(TransactionOutput o : outputs) {
-			NoobChain.UTXOs.put(o.id , o);
+			Blockchain.UTXOs.put(o.id , o);
 		}
 		
 		//Remove transaction inputs from UTXO lists as spent:
 		for(TransactionInput i : inputs) {
 			if(i.UTXO == null) continue; //if Transaction can't be found skip it 
-			NoobChain.UTXOs.remove(i.UTXO.id);
+			Blockchain.UTXOs.remove(i.UTXO.id);
 		}
 		
 		return true;

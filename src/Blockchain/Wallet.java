@@ -1,4 +1,4 @@
-package noobchain;
+package Blockchain;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class Wallet {
 	
 	public float getBalance() {
 		float total = 0;	
-        for (Map.Entry<String, TransactionOutput> item: NoobChain.UTXOs.entrySet()){
+        for (Map.Entry<String, TransactionOutput> item: Blockchain.UTXOs.entrySet()){
         	TransactionOutput UTXO = item.getValue();
             if(UTXO.isMine(publicKey)) { //if output belongs to me ( if coins belong to me )
             	UTXOs.put(UTXO.id,UTXO); //add it to our list of unspent transactions.

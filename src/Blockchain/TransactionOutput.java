@@ -1,4 +1,4 @@
-package noobchain;
+package Blockchain;
 
 import java.security.PublicKey;
 
