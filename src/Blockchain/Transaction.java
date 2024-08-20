@@ -1,21 +1,22 @@
 package Blockchain;
 
-import java.security.*;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class Transaction {
 
-	public String transactionId; // Contains a hash of transaction*
+	public String transactionId; // Contains a hash of transaction.
 	public PublicKey sender, recipient; // Sender's/recipient's address/public key.
-	public float value; // Contains the amount we wish to send to the recipient.
-	public byte[] signature; // This is to prevent anybody else from spending funds in our wallet.
+	public float value; // Contains the amount to send to the recipient.
+	public byte[] signature; // This is to prevent anybody else from spending funds in the wallet.
 
 	public ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
 	public ArrayList<TransactionOutput> outputs = new ArrayList<TransactionOutput>();
 
-	private static int sequence = 0; // A rough count of how many transactions have been generated
-	// Constructor:
+	private static int sequence = 0; // A rough count of how many transactions have been generated.
 
+	// Constructor.
 	public Transaction(PublicKey from, PublicKey to, float value, ArrayList<TransactionInput> inputs) {
 		this.sender = from;
 		this.recipient = to;
@@ -24,13 +25,12 @@ public class Transaction {
 	}
 
 	public boolean processTransaction() {
-
 		if (verifySignature() == false) {
-			System.out.println("#Transaction Signature failed to verify");
+			System.out.println("#Transaction Signature failed to verify.");
 			return false;
 		}
 
-		// Gathers transaction inputs (Making sure they are unspent):
+		// Gathers transaction inputs (making sure they are unspent):
 		for (TransactionInput i : inputs) {
 			i.UTXO = Blockchain.UTXOs.get(i.transactionOutputId);
 		}
@@ -43,13 +43,13 @@ public class Transaction {
 		}
 
 		// Generate transaction outputs:
-		float leftOver = getInputsValue() - value; // get value of inputs then the left over change:
+		float leftOver = getInputsValue() - value; // Get value of inputs then the left over change:
 		transactionId = calculateHash();
-		outputs.add(new TransactionOutput(this.recipient, value, transactionId)); // send value to recipient
-		outputs.add(new TransactionOutput(this.sender, leftOver, transactionId)); // send the left over 'change' back to
-																					// sender
+		// Send value to recipient; change returned to the sender.
+		outputs.add(new TransactionOutput(this.recipient, value, transactionId));
+		outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
 
-		// Add outputs to Unspent list
+		// Add outputs to unspent list.
 		for (TransactionOutput o : outputs) {
 			Blockchain.UTXOs.put(o.id, o);
 		}
@@ -68,7 +68,7 @@ public class Transaction {
 		float total = 0;
 		for (TransactionInput i : inputs) {
 			if (i.UTXO == null)
-				continue; // if Transaction can't be found skip it, This behavior may not be optimal.
+				continue; // If a transaction can't be found, I skip it. Is this suboptimal?
 			total += i.UTXO.value;
 		}
 		return total;
@@ -95,7 +95,7 @@ public class Transaction {
 	}
 
 	private String calculateHash() {
-		sequence++; // increase the sequence to avoid 2 identical transactions having the same hash
+		sequence++; // Increase the sequence to avoid 2 identical transactions having the same hash.
 		return StringUtil.applySha256(StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient)
 				+ Float.toString(value) + sequence);
 	}

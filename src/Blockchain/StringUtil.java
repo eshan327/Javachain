@@ -1,21 +1,24 @@
 package Blockchain;
 
-import java.security.*;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Base64;
-import com.google.gson.GsonBuilder;
+//import com.google.gson.GsonBuilder;
 import java.util.List;
 
 public class StringUtil {
 
 	// Applies Sha256 to a string and returns the result.
 	public static String applySha256(String input) {
-
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			// Applies sha256 to our input,
+			// Applies sha256 to our input:
 			byte[] hash = digest.digest(input.getBytes("UTF-8"));
-			StringBuffer hexString = new StringBuffer(); // This will contain hash as hexidecimal
+			StringBuffer hexString = new StringBuffer(); // Contains hash as a hexadecimal string.
 			for (int i = 0; i < hash.length; i++) {
 				String hex = Integer.toHexString(0xff & hash[i]);
 				if (hex.length() == 1)
@@ -28,10 +31,11 @@ public class StringUtil {
 		}
 	}
 
-	// Applies ECDSA Signature and returns the result ( as bytes ).
+	// Applies ECDSA signature and returns the result, as bytes.
 	public static byte[] applyECDSASig(PrivateKey privateKey, String input) {
 		Signature dsa;
 		byte[] output = new byte[0];
+
 		try {
 			dsa = Signature.getInstance("ECDSA", "BC");
 			dsa.initSign(privateKey);
@@ -42,10 +46,11 @@ public class StringUtil {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+
 		return output;
 	}
 
-	// Verifies a String signature
+	// Verifies a String signature.
 	public static boolean verifyECDSASig(PublicKey publicKey, String data, byte[] signature) {
 		try {
 			Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
@@ -58,13 +63,13 @@ public class StringUtil {
 	}
 
 	// Short hand helper to turn Object into a json string
-	public static String getJson(Object o) {
-		return new GsonBuilder().setPrettyPrinting().create().toJson(o);
-	}
+	// public static String getJson(Object o) {
+	// return new GsonBuilder().setPrettyPrinting().create().toJson(o);
+	// }
 
 	// Returns difficulty string target, to compare to hash. eg difficulty of 5 will
 	// return "00000"
-	public static String getDificultyString(int difficulty) {
+	public static String getDifficultyString(int difficulty) {
 		return new String(new char[difficulty]).replace('\0', '0');
 	}
 
@@ -90,7 +95,7 @@ public class StringUtil {
 			previousTreeLayer = treeLayer;
 		}
 
-		String merkleRoot = (treeLayer.size() == 1) ? treeLayer.get(0) : "";
+		String merkleRoot = treeLayer.size() == 1 ? treeLayer.get(0) : "";
 		return merkleRoot;
 	}
 }

@@ -1,11 +1,11 @@
 package Blockchain;
 
-import java.security.Security;
+//import java.security.Security;
 import java.util.ArrayList;
 //import java.util.Base64;
 import java.util.HashMap;
 //import com.google.gson.GsonBuilder;
-import java.util.Map;
+//import java.util.Map;
 
 public class Blockchain {
 
@@ -17,31 +17,31 @@ public class Blockchain {
 	public static Transaction genesisTransaction;
 
 	public static void main(String[] args) {
-		// add our blocks to the blockchain ArrayList:
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); // Setup Bouncey castle as a
-																						// Security Provider
+		// Add our blocks to the blockchain ArrayList:
+		// Security.addProvider(new
+		// org.bouncycastle.jce.provider.BouncyCastleProvider());
+		// Set up Bouncy Castle as a security provider.
 
 		// Create wallets:
 		walletA = new Wallet();
 		walletB = new Wallet();
 		Wallet coinbase = new Wallet();
 
-		// create genesis transaction, which sends 100 NoobCoin to walletA:
+		// Create genesis transaction, which sends 100 to walletA:
 		genesisTransaction = new Transaction(coinbase.publicKey, walletA.publicKey, 100f, null);
-		genesisTransaction.generateSignature(coinbase.privateKey); // manually sign the genesis transaction
-		genesisTransaction.transactionId = "0"; // manually set the transaction id
+		genesisTransaction.generateSignature(coinbase.privateKey); // Manually sign the genesis transaction.
+		genesisTransaction.transactionId = "0"; // Manually set the transaction id.
 		genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.recipient, genesisTransaction.value,
-				genesisTransaction.transactionId)); // manually add the Transactions Output
-		UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0)); // its important to store
-																							// our first transaction in
-																							// the UTXOs list.
+				genesisTransaction.transactionId)); // Manually add the transaction's output.
+		// Storing first transaction in UTXOs list:
+		UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
 
 		System.out.println("Creating and Mining Genesis block... ");
 		Block genesis = new Block("0");
 		genesis.addTransaction(genesisTransaction);
 		addBlock(genesis);
 
-		// testing
+		// Primitive testing -- convert to JUnit testing later!
 		Block block1 = new Block(genesis.hash);
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance());
 		System.out.println("\nWalletA is Attempting to send funds (40) to WalletB...");
@@ -64,42 +64,36 @@ public class Blockchain {
 		System.out.println("WalletB's balance is: " + walletB.getBalance());
 
 		isChainValid();
-
 	}
 
 	public static Boolean isChainValid() {
-		Block currentBlock;
-		Block previousBlock;
+		Block currentBlock, previousBlock;
 		String hashTarget = new String(new char[difficulty]).replace('\0', '0');
-		HashMap<String, TransactionOutput> tempUTXOs = new HashMap<String, TransactionOutput>(); // a temporary working
-																									// list of unspent
-																									// transactions at a
-																									// given block
-																									// state.
+		// Create temporary list of unspent transactions for this given block:
+		HashMap<String, TransactionOutput> tempUTXOs = new HashMap<String, TransactionOutput>();
 		tempUTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
 
-		// loop through blockchain to check hashes:
+		// Loop through blockchain to check hashes:
 		for (int i = 1; i < blockchain.size(); i++) {
-
 			currentBlock = blockchain.get(i);
 			previousBlock = blockchain.get(i - 1);
-			// compare registered hash and calculated hash:
+			// Compare registered hash and calculated hash:
 			if (!currentBlock.hash.equals(currentBlock.calculateHash())) {
-				System.out.println("#Current Hashes not equal");
+				System.out.println("#Current Hashes not equal.");
 				return false;
 			}
-			// compare previous hash and registered previous hash
+			// Compare previous hash and registered previous hash:
 			if (!previousBlock.hash.equals(currentBlock.prevHash)) {
-				System.out.println("#Previous Hashes not equal");
+				System.out.println("#Previous Hashes not equal.");
 				return false;
 			}
-			// check if hash is solved
+			// Check if hash is solved:
 			if (!currentBlock.hash.substring(0, difficulty).equals(hashTarget)) {
-				System.out.println("#This block hasn't been mined");
+				System.out.println("#This block has not been mined.");
 				return false;
 			}
 
-			// loop thru blockchains transactions:
+			// Loop through blockchain transactions:
 			TransactionOutput tempOutput;
 			for (int t = 0; t < currentBlock.transactions.size(); t++) {
 				Transaction currentTransaction = currentBlock.transactions.get(t);
@@ -120,7 +114,6 @@ public class Blockchain {
 						System.out.println("#Referenced input on Transaction(" + t + ") is Missing");
 						return false;
 					}
-
 					if (input.UTXO.value != tempOutput.value) {
 						System.out.println("#Referenced input Transaction(" + t + ") value is Invalid");
 						return false;
@@ -133,18 +126,17 @@ public class Blockchain {
 					tempUTXOs.put(output.id, output);
 				}
 
-				if (currentTransaction.outputs.get(0).reciepient != currentTransaction.recipient) {
+				if (currentTransaction.outputs.get(0).recipient != currentTransaction.recipient) {
 					System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
 					return false;
 				}
-				if (currentTransaction.outputs.get(1).reciepient != currentTransaction.sender) {
+				if (currentTransaction.outputs.get(1).recipient != currentTransaction.sender) {
 					System.out.println("#Transaction(" + t + ") output 'change' is not sender.");
 					return false;
 				}
-
 			}
-
 		}
+
 		System.out.println("Blockchain is valid");
 		return true;
 	}
@@ -159,7 +151,7 @@ public class Blockchain {
  * public static void main(String[] args) {
  * //add our blocks to the blockchain ArrayList:
  * Security.addProvider(new
- * org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle
+ * org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncy castle
  * as a Security Provider
  * 
  * //walletA = new Wallet();
