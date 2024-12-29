@@ -1,4 +1,4 @@
-package Blockchain;
+package blockchain;
 
 import java.util.ArrayList;
 import java.util.Date;

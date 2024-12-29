@@ -1,4 +1,4 @@
-
+package blockchain;
 
 import java.security.Key;
 import java.security.MessageDigest;
@@ -7,7 +7,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Base64;
-//import com.google.gson.GsonBuilder;
+import com.google.gson.GsonBuilder;
 import java.util.List;
 
 public class StringUtil {
