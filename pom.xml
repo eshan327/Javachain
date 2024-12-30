@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <build>
-        <sourceDirectory>src/blockchain</sourceDirectory>
+        <sourceDirectory>src</sourceDirectory>
     </build>
 
     <properties>
