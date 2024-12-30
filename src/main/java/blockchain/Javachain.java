@@ -5,7 +5,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NoobChain {
+public class Javachain {
 	
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
 	public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>();
