@@ -30,7 +30,7 @@ public class Javachain {
 		genesisTransaction = new Transaction(coinbase.publicKey, walletA.publicKey, 100f, null);
 		genesisTransaction.generateSignature(coinbase.privateKey); // manually sign the genesis transaction
 		genesisTransaction.transactionId = "0"; // manually set the transaction id
-		genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.reciepient, genesisTransaction.value,
+		genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.recipient, genesisTransaction.value,
 				genesisTransaction.transactionId)); // manually add the Transactions Output
 		UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0)); // its important to store
 																							// our first transaction in
@@ -133,11 +133,11 @@ public class Javachain {
 					tempUTXOs.put(output.id, output);
 				}
 
-				if (currentTransaction.outputs.get(0).reciepient != currentTransaction.reciepient) {
+				if (currentTransaction.outputs.get(0).recipient != currentTransaction.recipient) {
 					System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
 					return false;
 				}
-				if (currentTransaction.outputs.get(1).reciepient != currentTransaction.sender) {
+				if (currentTransaction.outputs.get(1).recipient != currentTransaction.sender) {
 					System.out.println("#Transaction(" + t + ") output 'change' is not sender.");
 					return false;
 				}

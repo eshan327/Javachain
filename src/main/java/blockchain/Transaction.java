@@ -33,13 +33,13 @@ public class Transaction {
 
 		// Gathers transaction inputs (Making sure they are unspent):
 		for (TransactionInput i : inputs) {
-			i.UTXO = JavaChain.UTXOs.get(i.transactionOutputId);
+			i.UTXO = Javachain.UTXOs.get(i.transactionOutputId);
 		}
 
 		// Checks if transaction is valid:
-		if (getInputsValue() < JavaChain.minimumTransaction) {
+		if (getInputsValue() < Javachain.minimumTransaction) {
 			System.out.println("Transaction Inputs too small: " + getInputsValue());
-			System.out.println("Please enter the amount greater than " + JavaChain.minimumTransaction);
+			System.out.println("Please enter the amount greater than " + Javachain.minimumTransaction);
 			return false;
 		}
 
@@ -52,14 +52,14 @@ public class Transaction {
 
 		// Add outputs to Unspent list
 		for (TransactionOutput o : outputs) {
-			JavaChain.UTXOs.put(o.id, o);
+			Javachain.UTXOs.put(o.id, o);
 		}
 
 		// Remove transaction inputs from UTXO lists as spent:
 		for (TransactionInput i : inputs) {
 			if (i.UTXO == null)
 				continue; // if Transaction can't be found skip it
-			JavaChain.UTXOs.remove(i.UTXO.id);
+			Javachain.UTXOs.remove(i.UTXO.id);
 		}
 
 		return true;
