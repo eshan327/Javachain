@@ -33,3 +33,6 @@ Running it with Maven:
    ```sh
   mvn exec:java -Dexec.mainClass="com.blockchain.Main"
    ```
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/eshan327/Blockchain/blob/main/LICENSE) file for details.
