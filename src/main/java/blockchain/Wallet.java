@@ -1,6 +1,10 @@
 package blockchain;
 
-import java.security.*;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,68 +12,74 @@ import java.util.Map;
 
 public class Wallet {
 
-	public PrivateKey privateKey;
-	public PublicKey publicKey;
+    public PrivateKey privateKey;
+    public PublicKey publicKey;
 
-	public HashMap<String, TransactionOutput> UTXOs = new HashMap<String, TransactionOutput>();
+    public HashMap<String, TransactionOutput> UTXOs = new HashMap<>(); // Only UTXOs owned by this wallet
 
-	public Wallet() {
-		generateKeyPair();
-	}
+    // Constructor
+    public Wallet() {
+        generateKeyPair();
+    }
 
-	public void generateKeyPair() {
-		try {
-			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
-			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-			ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime192v1");
-			// Initialize the key generator and generate a KeyPair
-			keyGen.initialize(ecSpec, random); // 256
-			KeyPair keyPair = keyGen.generateKeyPair();
-			// Set the public and private keys from the keyPair
-			privateKey = keyPair.getPrivate();
-			publicKey = keyPair.getPublic();
+    // Generates a new key pair (private and public keys)
+    public void generateKeyPair() {
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
+            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+            ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime192v1");
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+            // Initialize the key generator and generate a KeyPair
+            keyGen.initialize(ecSpec, random);
+            KeyPair keyPair = keyGen.generateKeyPair();
 
-	public float getBalance() {
-		float total = 0;
-		for (Map.Entry<String, TransactionOutput> item : Javachain.UTXOs.entrySet()) {
-			TransactionOutput UTXO = item.getValue();
-			if (UTXO.isMine(publicKey)) { // if output belongs to me ( if coins belong to me )
-				UTXOs.put(UTXO.id, UTXO); // add it to our list of unspent transactions.
-				total += UTXO.value;
-			}
-		}
-		return total;
-	}
+            // Set the public and private keys from the key pair
+            privateKey = keyPair.getPrivate();
+            publicKey = keyPair.getPublic();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public Transaction sendFunds(PublicKey _recipient, float value) {
-		if (getBalance() < value) {
-			System.out.println("#Not Enough funds to send transaction. Transaction Discarded.");
-			return null;
-		}
-		ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
+    // Returns the balance of this wallet by summing the values of all UTXOs owned by this wallet
+    public float getBalance() {
+        float total = 0;
+        for (Map.Entry<String, TransactionOutput> item : Javachain.UTXOs.entrySet()) {
+            TransactionOutput UTXO = item.getValue();
+            if (UTXO.isMine(publicKey)) { // If output belongs to me (if coins belong to me)
+                UTXOs.put(UTXO.id, UTXO); // Add it to our list of unspent transactions
+                total += UTXO.value;
+            }
+        }
+        return total;
+    }
 
-		float total = 0;
-		for (Map.Entry<String, TransactionOutput> item : UTXOs.entrySet()) {
-			TransactionOutput UTXO = item.getValue();
-			total += UTXO.value;
-			inputs.add(new TransactionInput(UTXO.id));
-			if (total > value)
-				break;
-		}
+    // Generates and returns a new transaction from this wallet
+    public Transaction sendFunds(PublicKey recipient, float value) {
+        if (getBalance() < value) { // Gather balance and check funds
+            System.out.println("#Not Enough funds to send transaction. Transaction Discarded.");
+            return null;
+        }
 
-		Transaction newTransaction = new Transaction(publicKey, _recipient, value, inputs);
-		newTransaction.generateSignature(privateKey);
+        // Create array list of inputs
+        ArrayList<TransactionInput> inputs = new ArrayList<>();
 
-		for (TransactionInput input : inputs) {
-			UTXOs.remove(input.transactionOutputId);
-		}
+        float total = 0;
+        for (Map.Entry<String, TransactionOutput> item : UTXOs.entrySet()) {
+            TransactionOutput UTXO = item.getValue();
+            total += UTXO.value;
+            inputs.add(new TransactionInput(UTXO.id));
+            if (total > value) break;
+        }
 
-		return newTransaction;
-	}
+        Transaction newTransaction = new Transaction(publicKey, recipient, value, inputs);
+        newTransaction.generateSignature(privateKey);
 
+        // Remove the used inputs from the UTXO list
+        for (TransactionInput input : inputs) {
+            UTXOs.remove(input.transactionOutputId);
+        }
+
+        return newTransaction;
+    }
 }
