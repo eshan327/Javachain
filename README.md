@@ -31,7 +31,7 @@ Building the project:
    ```
 Running it with Maven:
    ```sh
-  mvn exec:java -Dexec.mainClass="com.blockchain.Main"
+  mvn exec:java -Dexec.mainClass="com.blockchain.Javachain"
    ```
 
 ## License
